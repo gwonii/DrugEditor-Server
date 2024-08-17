@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>파일 업로드, 전환, 다운로드</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            width: 80%;
+            max-width: 1200px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .upload-section, .download-section {
+            flex: 1; /* 두 섹션이 동일한 비율을 가지도록 설정 */
+            margin: 10px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            background-color: #fafafa;
+        }
+        .upload-section h2, .download-section h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .file-list {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            background-color: #fff;
+        }
+        .file-list p {
+            margin: 5px 0;
+        }
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        .actions {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .actions button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .convert-button {
+            width: 100%;
+            text-align: center;
+            margin-top: 30px;
+        }
+        .convert-button button {
+            padding: 15px 40px; /* 버튼 크기를 조정 */
+            font-size: 18px; /* 버튼 글자 크기 조정 */
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+        }
+        .convert-button button:hover {
+            background-color: #0056b3; /* 호버 시 색상 변경 */
+        }
+
+        /* 반응형 설정 */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .upload-section, .download-section {
+                flex: 1 1 100%; /* 작은 화면에서는 두 섹션을 수직으로 배치 */
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <!-- 업로드 섹션 -->
+    <div class="upload-section">
+        <h2>업로드</h2>
+        <div class="file-list" id="upload-file-list">
+            <!-- 업로드한 파일 리스트가 여기에 표시됩니다 -->
+            <p>업로드된 파일이 없습니다.</p>
+        </div>
+        <div class="actions">
+            <input type="file" id="upload-input" multiple>
+            <button id="upload-button">업로드</button>
+        </div>
+    </div>
+
+    <!-- 다운로드 섹션 -->
+    <div class="download-section">
+        <h2>다운로드</h2>
+        <div class="file-list" id="download-file-list">
+            <!-- 전환된 파일 리스트가 여기에 표시됩니다 -->
+            <p>다운로드할 파일이 없습니다.</p>
+        </div>
+        <div class="actions">
+            <button id="download-button">다운로드</button>
+        </div>
+    </div>
+</div>
+
+<!-- 전환 버튼 -->
+<div class="convert-button">
+    <button id="convert-button">전환하기</button>
+</div>
+
+<script>
+    // 여기에 JavaScript로 업로드, 전환, 다운로드 기능을 추가할 수 있습니다.
+</script>
+
+</body>
+</html>
