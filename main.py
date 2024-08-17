@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import FileResponse
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
@@ -13,7 +13,7 @@ templates = Jinja2Templates(directory="templates")
 @app.get("/home/", response_class=HTMLResponse)
 async def read_home(request: Request):
     # 템플릿 렌더링
-    return templates.TemplateResponse("home3.html", {"request": request})
+    return templates.TemplateResponse("home.html", {"request": request})
 
 UPLOAD_DIRECTORY = "uploads/"
 
@@ -32,8 +32,17 @@ async def upload_file(file: UploadFile = File(...)):
 async def download_file(filename: str):
     file_location = os.path.join(UPLOAD_DIRECTORY, filename)
     if not os.path.exists(file_location):
-        return {"error": "File not found"}
+        raise HTTPException(status_code=404, detail="File not found")
     return FileResponse(file_location)
+
+@app.delete("/delete/{filename}")
+async def delete_file(filename: str):
+    file_location = os.path.join(UPLOAD_DIRECTORY, filename)
+    if not os.path.exists(file_location):
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    os.remove(file_location)
+    return {"info": f"file '{filename}' deleted successfully"}
 
 if __name__ == "__main__":
     import uvicorn
