@@ -137,6 +137,15 @@
     <button id="convert-button">전환하기</button>
 </div>
 
+<!-- 다운로드 경로 설정 모달 -->
+<div id="download-modal" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border: 1px solid #ccc; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+    <h3>다운로드 경로 설정</h3>
+    <p>파일을 저장할 경로를 입력하세요:</p>
+    <input type="text" id="download-path" placeholder="예: /user/downloads/" style="width: 100%; padding: 10px; margin-bottom: 20px;">
+    <button id="confirm-download">확인</button>
+    <button id="cancel-download">취소</button>
+</div>
+
 <script>
     const uploadedFiles = new Set(); // 기존에 업로드된 파일들을 저장하는 Set
     const downloadFiles = new Set(); // 다운로드로 전환된 파일들을 저장하는 Set
@@ -247,6 +256,60 @@
         if (fileSet.size === 0) {
             fileListElement.innerHTML = '<p>파일이 없습니다.</p>';
         }
+    }
+
+    document.getElementById('download-button').addEventListener('click', function() {
+        const fileListElement = document.getElementById('download-file-list');
+        if (downloadFiles.size === 0) {
+            alert('다운로드할 파일이 없습니다.');
+            return;
+        }
+
+        selectedFileForDownload = Array.from(downloadFiles);
+        showDownloadModal();
+    });
+
+    document.getElementById('confirm-download').addEventListener('click', async function() {
+        const downloadPath = document.getElementById('download-path').value;
+        if (!downloadPath) {
+            alert('경로를 입력하세요.');
+            return;
+        }
+
+        try {
+            // 파일 다운로드 요청
+            const response = await fetch(`/download/${selectedFileForDownload}`);
+            if (response.ok) {
+                const blob = await response.blob();
+                const downloadUrl = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = `${downloadPath}/${selectedFileForDownload}`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+
+                hideDownloadModal();
+            } else {
+                alert('파일 다운로드에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('파일 다운로드 중 오류가 발생했습니다.');
+        }
+    });
+
+    document.getElementById('cancel-download').addEventListener('click', function() {
+        hideDownloadModal();
+    });
+
+    function showDownloadModal() {
+        document.getElementById('download-modal').style.display = 'block';
+    }
+
+    function hideDownloadModal() {
+        document.getElementById('download-modal').style.display = 'none';
     }
 </script>
 
