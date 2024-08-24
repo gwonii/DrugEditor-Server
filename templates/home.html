@@ -139,6 +139,7 @@
 
 <script>
     const uploadedFiles = new Set(); // 기존에 업로드된 파일들을 저장하는 Set
+    const downloadFiles = new Set(); // 다운로드로 전환된 파일들을 저장하는 Set
 
     document.getElementById('upload-button').addEventListener('click', async function() {
         const input = document.getElementById('upload-input');
@@ -175,7 +176,7 @@
                 input.value = '';
 
                 // 업로드된 파일 리스트를 업데이트
-                updateFileList(fileListElement);
+                updateFileList(fileListElement, uploadedFiles);
             } else {
                 alert('파일 업로드에 실패했습니다.');
             }
@@ -185,27 +186,44 @@
         }
     });
 
-    async function deleteFileFromServer(fileName) {
+    document.getElementById('convert-button').addEventListener('click', async function() {
+        if (uploadedFiles.size === 0) {
+            alert('전환할 파일이 없습니다.');
+            return;
+        }
+
         try {
-            const response = await fetch(`/delete/${fileName}`, {
-                method: 'DELETE'
+            // 서버로 전환 요청
+            const response = await fetch('/convert-files/', {
+                method: 'POST'
             });
 
-            if (!response.ok) {
-                throw new Error('파일 삭제에 실패했습니다.');
-            }
+            if (response.ok) {
+                const result = await response.json();
+                console.log(result);
 
-            const result = await response.json();
-            console.log(result);
+                // 업로드된 파일들을 다운로드 리스트로 이동
+                uploadedFiles.forEach(file => {
+                    downloadFiles.add(file);
+                });
+
+                // 업로드된 파일 목록 초기화
+                uploadedFiles.clear();
+                updateFileList(document.getElementById('upload-file-list'), uploadedFiles);
+                updateFileList(document.getElementById('download-file-list'), downloadFiles);
+            } else {
+                alert('파일 전환에 실패했습니다.');
+            }
         } catch (error) {
             console.error('Error:', error);
-            alert('파일 삭제 중 오류가 발생했습니다.');
+            alert('파일 전환 중 오류가 발생했습니다.');
         }
-    }
+    });
 
-    function updateFileList(fileListElement) {
+    function updateFileList(fileListElement, fileSet) {
         fileListElement.innerHTML = ''; // 기존 내용을 지웁니다.
-        uploadedFiles.forEach(fileName => {
+
+        fileSet.forEach(fileName => {
             const fileItem = document.createElement('div');
             fileItem.className = 'file-item';
 
@@ -214,26 +232,23 @@
             fileNameElement.textContent = fileName;
             fileItem.appendChild(fileNameElement);
 
-            // "x" 버튼 추가
+            // 삭제 버튼 추가
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'x';
-            deleteButton.addEventListener('click', async function() {
-                await deleteFileFromServer(fileName); // 서버에서 파일 삭제
-                uploadedFiles.delete(fileName); // Set에서 파일 삭제
-                updateFileList(fileListElement); // 리스트 갱신
+            deleteButton.addEventListener('click', function() {
+                fileSet.delete(fileName);
+                updateFileList(fileListElement, fileSet);
             });
             fileItem.appendChild(deleteButton);
 
             fileListElement.appendChild(fileItem);
         });
 
-        if (uploadedFiles.size === 0) {
-            fileListElement.innerHTML = '<p>업로드된 파일이 없습니다.</p>';
+        if (fileSet.size === 0) {
+            fileListElement.innerHTML = '<p>파일이 없습니다.</p>';
         }
     }
 </script>
-
-
 
 </body>
 </html>
